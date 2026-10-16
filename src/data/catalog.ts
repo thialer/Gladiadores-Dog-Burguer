@@ -245,7 +245,7 @@ export const storeConfig = {
   name: 'GLADIADORES DOG BURGUER',
   tagline: 'Pizzas, Dogs & Burgers',
   whatsapp: '554197332406',
-  hours: 'Sex a Dom | Ter a Qui · 20h00 — 23h50',
+  hours: 'Sex a Dom | Ter a Qui · 19h00 — 23h50',
   deliveryFee: 6.0,
   estimatedDelivery: '30–45 min',
   address: 'Av. Brasil, 923 — Eucaliptos, Fazenda Rio Grande - PR',
