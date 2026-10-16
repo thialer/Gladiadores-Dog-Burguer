@@ -264,5 +264,5 @@ export function isStoreOpen(now = new Date()): boolean {
   const minuteOfDay = Number(values.hour) * 60 + Number(values.minute);
   const openDays = ['Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-  return Boolean(weekday && openDays.includes(weekday) && minuteOfDay >= 20 * 60 && minuteOfDay < 23 * 60 + 50);
+  return Boolean(weekday && openDays.includes(weekday) && minuteOfDay >= 19 * 60 && minuteOfDay < 23 * 60 + 50);
 }
