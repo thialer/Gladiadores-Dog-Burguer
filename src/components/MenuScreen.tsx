@@ -68,15 +68,11 @@ export function MenuScreen({ onAddProduct, onOpenCart, favorites, onToggleFavori
   const filtered = useMemo(() => {
     if (!query.trim()) return products;
     const q = query.toLowerCase();
-    return products.filter(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q) ||
-        p.customizations?.some((group) =>
-          group.options.some((option) =>
-            `${option.name} ${option.description ?? ''}`.toLowerCase().includes(q),
-          ),
-        ),
+    const nameMatches = products.filter((p) => p.name.toLowerCase().includes(q));
+    return nameMatches.length > 0 ? nameMatches : products.filter((p) =>
+      p.customizations?.some((group) =>
+        group.options.some((option) => option.name.toLowerCase().includes(q)),
+      ),
     );
   }, [query]);
 
