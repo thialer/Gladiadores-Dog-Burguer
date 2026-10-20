@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ArrowLeft, CheckCircle2, MessageCircle, Send } from 'lucide-react';
 import { useCart, formatBRL } from '../cart/CartContext';
-import { storeConfig } from '../data/catalog';
+import { deliveryRegions, getDeliveryFee, storeConfig } from '../data/catalog';
 import { buildWhatsAppMessage, whatsappLink, type CheckoutData } from '../cart/whatsapp';
 
 interface Props {
@@ -38,14 +38,15 @@ export function CheckoutScreen({ onBack }: Props) {
     (!needsAddress ||
       (form.address.trim() && form.number.trim() && form.district.trim()));
 
-  const total = subtotal + (needsAddress ? storeConfig.deliveryFee : 0);
+  const deliveryFee = needsAddress ? getDeliveryFee(form.district) : 0;
+  const total = subtotal + deliveryFee;
 
   const finish = () => {
     if (!valid) return;
     const message = buildWhatsAppMessage(
       items,
       form,
-      needsAddress ? storeConfig.deliveryFee : 0,
+      deliveryFee,
     );
     const link = whatsappLink(message);
     setWaLink(link);
@@ -165,7 +166,13 @@ export function CheckoutScreen({ onBack }: Props) {
           </div>
           <Field label="Complemento" value={form.complement} onChange={(v) => set('complement', v)} placeholder="Apto, bloco..." />
           <div className="grid grid-cols-2 gap-2">
-            <Field label="Bairro *" value={form.district} onChange={(v) => set('district', v)} placeholder="Bairro" />
+            <SelectField
+              label="Bairro/região *"
+              value={form.district}
+              onChange={(v) => set('district', v)}
+              placeholder="Selecione"
+              options={deliveryRegions.map(({ name, fee }) => ({ value: name, label: `${name} — ${formatBRL(fee)}` }))}
+            />
             <Field label="Cidade" value={form.city} onChange={(v) => set('city', v)} placeholder="Cidade" />
           </div>
         </Section>
@@ -221,7 +228,7 @@ export function CheckoutScreen({ onBack }: Props) {
           {needsAddress && (
             <div className="flex justify-between text-gray-500">
               <span>Taxa de entrega</span>
-              <span>{formatBRL(storeConfig.deliveryFee)}</span>
+              <span>{form.district ? formatBRL(deliveryFee) : 'Selecione a região'}</span>
             </div>
           )}
           <div className="flex justify-between pt-1 text-base font-extrabold text-ink-900">
@@ -288,6 +295,24 @@ function Field({
         placeholder={placeholder}
         className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-brand-500 focus:bg-white focus:ring-2 focus:ring-brand-100"
       />
+    </label>
+  );
+}
+
+function SelectField({
+  label, value, onChange, placeholder, options,
+}: {
+  label: string; value: string; onChange: (v: string) => void; placeholder: string;
+  options: { value: string; label: string }[];
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-xs font-semibold text-gray-500">{label}</span>
+      <select value={value} onChange={(e) => onChange(e.target.value)} required
+        className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-500 focus:bg-white focus:ring-2 focus:ring-brand-100">
+        <option value="">{placeholder}</option>
+        {options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+      </select>
     </label>
   );
 }

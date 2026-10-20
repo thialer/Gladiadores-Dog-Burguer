@@ -251,6 +251,22 @@ export const storeConfig = {
   address: 'Av. Brasil, 923 — Eucaliptos, Fazenda Rio Grande - PR',
 };
 
+export const deliveryRegions = [
+  { name: 'Eucaliptos', fee: 5 },
+  { name: 'Nações', fee: 6 },
+  { name: 'Iguaçu', fee: 7 },
+  { name: 'Pioneiros', fee: 7 },
+  { name: 'Santa Terezinha', fee: 8 },
+  { name: 'Estados', fee: 9 },
+  { name: 'Gralha Azul', fee: 8 },
+  { name: 'Veneza', fee: 12 },
+  { name: 'Umbará', fee: 14 },
+] as const;
+
+export function getDeliveryFee(region: string): number {
+  return deliveryRegions.find(({ name }) => name === region)?.fee ?? 0;
+}
+
 export function isStoreOpen(now = new Date()): boolean {
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: 'America/Sao_Paulo',

@@ -2,7 +2,6 @@ import { Trash2, Pencil, ShoppingBag, ArrowRight } from 'lucide-react';
 import { BottomSheet } from './BottomSheet';
 import { useCart, formatBRL, summarizeSelections } from '../cart/CartContext';
 import { QuantityStepper } from './QuantityStepper';
-import { storeConfig } from '../data/catalog';
 
 interface Props {
   open: boolean;
@@ -105,15 +104,10 @@ export function CartDrawer({ open, onClose, onContinue, onEdit }: Props) {
 
           <div className="mt-5 space-y-2 border-t border-gray-100 pt-4">
             <Row label="Subtotal" value={formatBRL(subtotal)} />
-            <Row
-              label="Taxa de entrega"
-              value={formatBRL(storeConfig.deliveryFee)}
-              hint="estimada"
-            />
             <div className="flex items-center justify-between pt-1">
               <span className="text-base font-bold text-ink-900">Total</span>
               <span className="text-xl font-extrabold text-brand-700">
-                {formatBRL(subtotal + storeConfig.deliveryFee)}
+                {formatBRL(subtotal)}
               </span>
             </div>
           </div>
