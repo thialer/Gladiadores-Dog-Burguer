@@ -40,6 +40,40 @@ const edgeGroup: CustomizationGroup = {
 };
 
 let nextId = 0;
+const compoundIngredients = [
+  'alcatra ao alho e óleo', 'hambúrgueres artesanais', 'hambúrguer artesanal',
+  '2 hambúrgueres', '3 hambúrgueres', '2 vinas', 'cebola caramelizada',
+  'calabresa moída', 'carne moída', 'frango desfiado', 'linguiça Blumenau',
+  'molho Billy Jack', 'molho barbecue', 'batata palha', 'tomate seco',
+  'queijo prato', 'cream cheese', 'chocolate preto', 'chocolate branco',
+  'mousse de limão', 'sonho de valsa', 'ouro branco',
+];
+
+export function getRemovableIngredients(description: string): string[] {
+  let text = description.trim();
+  const introEnd = text.indexOf('.');
+  if (introEnd > 0 && introEnd < 35) text = text.slice(introEnd + 1).trim();
+  text = text.replace(/,\s*\d+\s*g\b.*$/i, '');
+  text = text.replace(/chocolate preto e branco/gi, 'chocolate preto, chocolate branco');
+
+  const protectedPhrases: string[] = [];
+  compoundIngredients
+    .slice()
+    .sort((a, b) => b.length - a.length)
+    .forEach((phrase) => {
+      text = text.replace(new RegExp(phrase, 'gi'), (match) => {
+        const index = protectedPhrases.push(match) - 1;
+        return `__ingredient${index}__`;
+      });
+    });
+
+  return [...new Set(text
+    .split(/,\s*|\s+(?:e|ou|com)\s+/i)
+    .map((part) => part.replace(/__ingredient(\d+)__/gi, (_match, index: string) => protectedPhrases[Number(index)] ?? ''))
+    .map((part) => part.trim().replace(/[.!?]$/g, '').trim())
+    .filter((part) => part.length > 1 && !/^\d+\s*g$/i.test(part)))];
+}
+
 function item(name: string, description: string, price: number, categoryId: string, image = burgerImage): Product {
   return { id: `real-${++nextId}`, name, description, price, image, categoryId };
 }
@@ -144,7 +178,10 @@ function pizza(size: 'P' | 'G', priceIndex: 2 | 3): Product {
     price: lowestPrice,
     image: pizzaImage,
     categoryId: 'pizzas',
-    customizations: [flavorOptions, edgeGroup],
+    customizations: [
+      flavorOptions,
+      edgeGroup,
+    ],
   };
 }
 

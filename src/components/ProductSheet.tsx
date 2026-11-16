@@ -4,6 +4,7 @@ import type { Product, CustomizationGroup } from '../data/catalog';
 import { BottomSheet } from './BottomSheet';
 import { QuantityStepper } from './QuantityStepper';
 import { formatBRL, computeUnitPrice, type CartSelection } from '../cart/CartContext';
+import { getRemovableIngredients } from '../data/catalog';
 
 interface Props {
   product: Product | null;
@@ -36,14 +37,20 @@ export function ProductSheet({
   }, [product?.id, open, defaultQuantity, defaultSelections, defaultNotes]);
 
   const groups = product?.customizations ?? [];
+  const selectedFlavorIds = selections.flavor ?? [];
+  const selectedFlavorDescriptions = (groups.find((group) => group.id === 'flavor')?.options ?? [])
+    .filter((option) => selectedFlavorIds.includes(option.id))
+    .map((option) => option.description ?? '');
+  const ingredientDescriptions = product?.categoryId === 'pizzas'
+    ? selectedFlavorDescriptions
+    : product ? [product.description] : [];
+  const ingredients = [...new Set(ingredientDescriptions.flatMap(getRemovableIngredients))];
 
   const toggle = (groupId: string, optionId: string, type: 'single' | 'multi', max?: number) => {
     setSelections((prev) => {
       const current = prev[groupId] || [];
       if (type === 'single') {
-        if (current.includes(optionId) && groupId === 'edge') {
-          return { ...prev, [groupId]: [] };
-        }
+        if (current.includes(optionId) && groupId === 'edge') return { ...prev, [groupId]: [] };
         return { ...prev, [groupId]: [optionId] };
       }
       if (current.includes(optionId)) {
@@ -110,7 +117,23 @@ export function ProductSheet({
       </div>
 
       <div className="mt-5 space-y-5">
-        {groups.map((group) => (
+        {product.categoryId !== 'drinks' && (
+          <section aria-labelledby="product-ingredients-title">
+            <h3 id="product-ingredients-title" className="mb-2 text-sm font-bold uppercase tracking-wide text-gray-400">Ingredientes</h3>
+            {product.categoryId === 'pizzas' && selectedFlavorIds.length === 0 ? (
+              <p className="text-sm text-gray-500">Escolha o sabor para ver os ingredientes.</p>
+            ) : ingredients.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {ingredients.map((ingredient) => (
+                  <span key={ingredient} className="rounded-full bg-gray-100 px-3 py-1.5 text-sm text-gray-700">{ingredient}</span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500">Consulte a descrição do produto.</p>
+            )}
+          </section>
+        )}
+        {groups.filter((group) => group.id !== 'notes').map((group) => (
           <GroupBlock
             key={group.id}
             group={group}
@@ -122,6 +145,20 @@ export function ProductSheet({
             onNotes={setNotes}
           />
         ))}
+        <div>
+          <label htmlFor="product-notes" className="mb-2 block font-bold text-ink-900">
+            Observação deste item <span className="text-xs font-normal text-gray-400">(opcional)</span>
+          </label>
+          <textarea
+            id="product-notes"
+            value={notes}
+            onChange={(event) => setNotes(event.target.value)}
+            placeholder="Quer retirar algum ingrediente? Escreva aqui."
+            rows={2}
+            className="w-full resize-none rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-brand-500 focus:bg-white focus:ring-2 focus:ring-brand-100"
+          />
+          <p className="mt-1 text-xs text-gray-500">A lista acima é informativa. Escreva aqui se quiser retirar algum ingrediente.</p>
+        </div>
       </div>
 
       <div className="sticky bottom-0 mt-6 -mx-5 -mb-6 bg-white/95 px-5 py-4 pb-safe backdrop-blur border-t border-gray-100">

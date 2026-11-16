@@ -14,12 +14,19 @@ export function ProductCard({ product, onAdd, isFavorite, onToggleFavorite }: Pr
   return (
     <article className="group overflow-hidden rounded-2xl bg-white shadow-soft transition hover:shadow-card">
       <div className="relative aspect-[4/3] overflow-hidden">
-        <img
-          src={product.image}
-          alt={product.name}
-          loading="lazy"
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-        />
+        <button
+          type="button"
+          onClick={() => onAdd(product)}
+          aria-label={`Ver detalhes de ${product.name}`}
+          className="absolute inset-0 h-full w-full"
+        >
+          <img
+            src={product.image}
+            alt={product.name}
+            loading="lazy"
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          />
+        </button>
         <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
           {product.badges?.map((b) => (
             <Badge key={b} type={b} />
@@ -39,7 +46,7 @@ export function ProductCard({ product, onAdd, isFavorite, onToggleFavorite }: Pr
 
       <div className="p-4">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-bold leading-tight text-ink-900">{product.name}</h3>
+          <h3><button type="button" onClick={() => onAdd(product)} className="text-left font-bold leading-tight text-ink-900">{product.name}</button></h3>
           {product.rating && (
             <span className="flex shrink-0 items-center gap-0.5 text-xs font-semibold text-gray-500">
               <Star size={12} className="fill-accent-500 text-accent-500" />

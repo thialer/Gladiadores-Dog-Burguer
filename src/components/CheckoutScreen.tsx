@@ -197,12 +197,12 @@ export function CheckoutScreen({ onBack }: Props) {
         )}
       </Section>
 
-      <Section title="Observações finais">
+      <Section title="Observações do pedido (opcional)">
         <textarea
           value={form.notes}
           onChange={(e) => set('notes', e.target.value)}
           rows={2}
-          placeholder="Ex.: Entregar na portaria, sem cebola..."
+          placeholder="Ex.: entregar na portaria ou deixar com o porteiro"
           className="w-full resize-none rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-brand-500 focus:bg-white focus:ring-2 focus:ring-brand-100"
         />
       </Section>

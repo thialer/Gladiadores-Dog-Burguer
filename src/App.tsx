@@ -25,20 +25,6 @@ function Shell() {
   const [favorites, setFavorites] = useState<string[]>([]);
 
   const openProduct = (p: Product) => {
-    if (!p.customizations?.length) {
-      const item: CartItem = {
-        uid: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-        product: p,
-        quantity: 1,
-        selections: {},
-        notes: '',
-        unitPrice: p.price,
-      };
-      addItem(item);
-      toast.show(`${p.name} adicionado!`);
-      return;
-    }
-
     setSheetProduct(p);
     setSheetDefaults({ quantity: 1, selections: {}, notes: '' });
     setSheetOpen(true);

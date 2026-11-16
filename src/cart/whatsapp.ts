@@ -58,7 +58,7 @@ export function buildWhatsAppMessage(
     if (sum.length > 0) {
       sum.forEach((s) => lines.push(`  • ${s}`));
     }
-    if (item.notes) lines.push(`  • Obs: ${item.notes}`);
+    if (item.notes) lines.push(`  • Observação do item: ${item.notes}`);
     lines.push(`  Subtotal: ${formatBRL(itemTotal)}`);
     lines.push('');
   });
